@@ -798,6 +798,44 @@
         animation: shine 3.2s ease-in-out infinite;
         pointer-events: none;
       }
+      .efb {
+        margin: 12px auto 0;
+        max-width: 420px;
+        text-align: center;
+        font-size: 0.74rem;
+        line-height: 1.5;
+        color: var(--rose);
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        padding: 12px;
+      }
+      .efb[hidden] {
+        display: none;
+      }
+      .efb b {
+        word-break: break-all;
+      }
+      .efb div {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+      .efb a,
+      .efb button {
+        font: 600 0.7rem var(--sans);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: linear-gradient(180deg, #f46fa4, #e0377f);
+        border: 0;
+        border-radius: 999px;
+        padding: 9px 16px;
+        text-decoration: none;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -971,7 +1009,7 @@
               ><input
                 id="ph"
                 type="tel"
-                placeholder="Phone Number *"
+                placeholder="Phone Number"
                 autocomplete="tel"
             /></label>
             <label class="fld"
@@ -998,6 +1036,20 @@
             <svg class="ic"><use href="#i-snd" /></svg>Send RSVP
           </button>
           <button type="button" class="alt" id="se">or send by email</button>
+          <div class="efb" id="ef" hidden>
+            <p>Email didn't open? Send your RSVP details to <b id="ea"></b></p>
+            <div>
+              <a id="gm" target="_blank" rel="noopener noreferrer"
+                >Open in Gmail</a
+              ><button type="button" id="cp">Copy details</button>
+            </div>
+          </div>
+          <div class="efb" id="ok" hidden>
+            <p>🎉 You're on the guest list! See you by the pool.</p>
+            <div>
+              <button type="button" id="okw">Also confirm on WhatsApp</button>
+            </div>
+          </div>
         </form>
       </section>
 
@@ -1331,7 +1383,7 @@
         function data() {
           var ok = true,
             e = $("em");
-          [$("nm"), e, $("ph"), sel].forEach(function (x) {
+          [$("nm"), e, sel].forEach(function (x) {
             var v = x.value.trim(),
               bad = !v || (x === e && !/^\S+@\S+\.\S+$/.test(v));
             x.parentNode.classList.toggle("err", bad);
@@ -1356,12 +1408,63 @@
         function wa(t) {
           var u =
             "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(t);
+          try {
+            navigator.clipboard.writeText(t).catch(function () {});
+          } catch (e) {}
           if (!window.open(u, "_blank")) location.href = u;
+        }
+        var G = {
+          id: "1FAIpQLSfK875-L4lJn3SWnpLURE6MiIYVxy_-W0xkvp6Wuml8Ji4xzQ",
+          n: "entry.959153428",
+          e: "entry.1916795999",
+          p: "entry.387374501",
+          a: "entry.178795441",
+          dr: "",
+          so: "",
+        };
+        function sendForm(d) {
+          var btn = f.querySelector(".send"),
+            lab = btn.lastChild,
+            b = new URLSearchParams(),
+            dn = $("dt").value.trim(),
+            mn = $("ms").value.trim();
+          btn.disabled = true;
+          lab.textContent = "Sending…";
+          b.append(G.n, d.n);
+          b.append(G.e, d.e);
+          if (d.p) b.append(G.p, d.p);
+          b.append(G.a, d.a);
+          if (G.dr && dn) b.append(G.dr, dn);
+          if (G.so && mn) b.append(G.so, mn);
+          fetch("https://docs.google.com/forms/d/e/" + G.id + "/formResponse", {
+            method: "POST",
+            mode: "no-cors",
+            body: b,
+          })
+            .then(function () {
+              lab.textContent = "RSVP Sent ✓";
+              $("ok").hidden = false;
+              $("okw").onclick = function () {
+                waRsvp(d);
+              };
+              var r = btn.getBoundingClientRect();
+              burst(r.left + r.width / 2, r.top + r.height / 2);
+              toast("You're on the guest list! 💖");
+            })
+            .catch(function () {
+              btn.disabled = false;
+              lab.textContent = "Send RSVP";
+              toast("Couldn't reach the guest list, opening WhatsApp instead");
+              waRsvp(d);
+            });
         }
         f.addEventListener("submit", function (ev) {
           ev.preventDefault();
           var d = data();
           if (!d) return;
+          sendForm(d);
+        });
+        var waRsvp = function (d) {
           var b = f.querySelector(".send").getBoundingClientRect();
           burst(b.left + b.width / 2, b.top + b.height / 2);
           wa(
@@ -1382,8 +1485,10 @@
               "\n\n📅 Sunday, 31 January 2027 · " +
               C.venue,
           );
-          toast("Opening WhatsApp... 🥂");
-        });
+          toast(
+            "Opening WhatsApp… if it doesn't open, your RSVP is copied. Paste it to +94 75 593 8444 🥂",
+          );
+        };
         $("se").onclick = function () {
           var d = data();
           if (!d) return;
@@ -1403,20 +1508,53 @@
             "\nNote / Song Request: " +
             d.m +
             "\n\nSent from the private invitation.";
-          try {
-            navigator.clipboard.writeText(b).catch(function () {});
-          } catch (e) {}
-          location.href =
-            "mailto:" +
-            C.email +
-            "?subject=" +
-            encodeURIComponent("RSVP: " + C.title + " - " + d.n) +
+          var sub = "RSVP: " + C.title + " - " + d.n,
+            q =
+              "?subject=" +
+              encodeURIComponent(sub) +
+              "&body=" +
+              encodeURIComponent(b);
+          $("ea").textContent = C.email;
+          $("gm").href =
+            "https://mail.google.com/mail/?view=cm&fs=1&to=" +
+            encodeURIComponent(C.email) +
+            "&su=" +
+            encodeURIComponent(sub) +
             "&body=" +
             encodeURIComponent(b);
+          window.RB = b;
+          $("ef").hidden = false;
+          cp(b);
+          var a = document.createElement("a");
+          a.href = "mailto:" + C.email + q;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
           toast(
-            "Opening email… details copied in case you need to paste them to " +
-              C.email,
+            "Details copied ✨ Email app not opening? Use the options below.",
           );
+          $("ef").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        };
+        function cp(t) {
+          try {
+            navigator.clipboard.writeText(t).catch(old);
+          } catch (e) {
+            old();
+          }
+          function old() {
+            var x = document.createElement("textarea");
+            x.value = t;
+            document.body.appendChild(x);
+            x.select();
+            try {
+              document.execCommand("copy");
+            } catch (e) {}
+            document.body.removeChild(x);
+          }
+        }
+        $("cp").onclick = function () {
+          cp(window.RB);
+          toast("RSVP details copied! Paste them into an email ✉️");
         };
 
         // action bar
