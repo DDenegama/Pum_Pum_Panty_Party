@@ -83,12 +83,16 @@
         scroll-behavior: smooth;
         scroll-padding-top: env(safe-area-inset-top, 0px);
         background: #ffd3e3;
+        overscroll-behavior: none;
+        overscroll-behavior-y: none;
       }
       body {
         font-family: var(--sans);
         color: var(--ink);
         background: #ffd3e3;
         overflow-x: hidden;
+        overscroll-behavior: none;
+        overscroll-behavior-y: none;
         -webkit-font-smoothing: antialiased;
       }
       body::before {
@@ -413,7 +417,7 @@
         justify-content: space-between;
         align-items: flex-end;
         gap: 12px;
-        padding: 14px 22px 96px;
+        padding: 14px 22px 24px;
         font-family: var(--script);
         color: var(--hot);
         line-height: 1.15;
@@ -646,6 +650,9 @@
           margin-left: 10px;
           margin-right: 10px;
           padding: 16px 14px;
+        }
+        .ft {
+          padding: 10px 16px 20px;
         }
       }
       @media (min-width: 900px) {
@@ -1035,6 +1042,7 @@
         user-select: none;
         -webkit-user-select: none;
         touch-action: none; /* let touch-drag tilt the envelope instead of scrolling */
+        cursor: pointer;
       }
 
       .env-shadow {
@@ -1066,8 +1074,9 @@
           0 24px 50px rgba(163, 25, 85, 0.28),
           0 6px 16px rgba(0, 0, 0, 0.08);
         background: #fdf2f7;
+        cursor: pointer;
         /* Smooth follow for the hover / touch tilt (set from JS) */
-        transition: transform 0.25s ease-out;
+        transition: transform 0.15s ease-out;
         will-change: transform;
       }
 
@@ -1259,6 +1268,8 @@
         /* Seal centre sits exactly on the flap's bottom tip (flap height) */
         top: 154px;
         left: 50%;
+        width: var(--seal-size);
+        height: var(--seal-size);
         transform: translate(-50%, calc(var(--seal-size) / -2));
         z-index: 10;
         cursor: pointer;
@@ -1274,14 +1285,15 @@
       }
       .env-seal {
         position: relative;
-        width: var(--seal-size);
-        height: var(--seal-size);
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* hit testing stays on the stable .env-seal-wrap box */
         background: transparent;
         border-radius: 0;
         box-shadow: none;
         filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.45))
           drop-shadow(0 4px 8px rgba(0, 0, 0, 0.16));
-        transform-origin: 70% 20%;
+        transform-origin: center center;
         transition:
           transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2),
           filter 0.3s ease;
@@ -1311,6 +1323,8 @@
       .env-seal-hint {
         /* Sits below the envelope, not on it */
         position: absolute;
+        pointer-events: auto;
+        cursor: pointer;
         top: calc(
           var(--env-h) - var(--flap-h) + var(--seal-size) / 2 + 26px
         );
@@ -1411,6 +1425,10 @@
       }
 
       /* Orchestrated Timeline */
+      body.env-active {
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
       body.env-active .fb,
       body.env-active .music-ctl {
         opacity: 0;
@@ -2059,14 +2077,25 @@
         addEventListener("scroll", act, { passive: true });
         addEventListener("resize", act);
         act();
-        if ("IntersectionObserver" in window)
-          new IntersectionObserver(
-            function (es) {
-              fv = es[0].isIntersecting;
+        if ("IntersectionObserver" in window) {
+          var rsvpObs = new IntersectionObserver(
+            function () {
+              var s5 = $("s5"),
+                s7 = $("s7"),
+                vh = window.innerHeight || document.documentElement.clientHeight;
+              var s5Rect = s5 ? s5.getBoundingClientRect() : null;
+              var s7Rect = s7 ? s7.getBoundingClientRect() : null;
+              fv = Boolean(
+                (s5Rect && s5Rect.top < vh && s5Rect.bottom > 0) ||
+                (s7Rect && s7Rect.top < vh && s7Rect.bottom > 0)
+              );
               act();
             },
-            { threshold: 0.35 },
-          ).observe($("s5"));
+            { threshold: [0, 0.1, 0.5] },
+          );
+          if ($("s5")) rsvpObs.observe($("s5"));
+          if ($("s7")) rsvpObs.observe($("s7"));
+        }
         $("fr").onclick = function () {
           $("s5").scrollIntoView({
             behavior: rm ? "auto" : "smooth",
@@ -2584,19 +2613,34 @@
               window.matchMedia &&
               window.matchMedia("(prefers-reduced-motion: reduce)").matches
             );
+          var tiltRaf = null;
           function resetTilt() {
-            if (envBox) envBox.style.transform = "";
+            if (tiltRaf) {
+              cancelAnimationFrame(tiltRaf);
+              tiltRaf = null;
+            }
+            if (envBox) {
+              envBox.style.transition = "transform 0.4s ease-out";
+              envBox.style.transform = "";
+            }
           }
           if (envBox && envWrap && tiltOK) {
             var tiltEnvelope = function (e) {
               if (envStage.classList.contains("is-opening")) return;
-              var r = envWrap.getBoundingClientRect();
-              var px = (e.clientX - r.left) / r.width - 0.5,
-                py = (e.clientY - r.top) / r.height - 0.5;
-              px = Math.max(-0.5, Math.min(0.5, px));
-              py = Math.max(-0.5, Math.min(0.5, py));
-              envBox.style.transform =
-                "rotateX(" + -py * 18 + "deg) rotateY(" + px * 22 + "deg)";
+              var cx = e.clientX,
+                cy = e.clientY;
+              if (tiltRaf) return;
+              tiltRaf = requestAnimationFrame(function () {
+                tiltRaf = null;
+                var r = envWrap.getBoundingClientRect();
+                var px = (cx - r.left) / r.width - 0.5,
+                  py = (cy - r.top) / r.height - 0.5;
+                px = Math.max(-0.5, Math.min(0.5, px));
+                py = Math.max(-0.5, Math.min(0.5, py));
+                envBox.style.transition = "transform 0.08s ease-out";
+                envBox.style.transform =
+                  "rotateX(" + -py * 16 + "deg) rotateY(" + px * 20 + "deg)";
+              });
             };
             envWrap.addEventListener("pointermove", tiltEnvelope);
             envWrap.addEventListener("pointerdown", tiltEnvelope);
@@ -2611,6 +2655,11 @@
             e.stopPropagation();
             openEnvelope();
           });
+          if (envBox) {
+            envBox.addEventListener("click", function (e) {
+              openEnvelope();
+            });
+          }
           envSeal.addEventListener("keydown", function (e) {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
