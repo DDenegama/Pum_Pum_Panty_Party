@@ -1270,6 +1270,7 @@
         left: 50%;
         width: var(--seal-size);
         height: var(--seal-size);
+        border-radius: 50%;
         transform: translate(-50%, calc(var(--seal-size) / -2));
         z-index: 10;
         cursor: pointer;
@@ -1291,13 +1292,13 @@
         background: transparent;
         border-radius: 0;
         box-shadow: none;
-        filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.45))
-          drop-shadow(0 4px 8px rgba(0, 0, 0, 0.16));
+        filter: drop-shadow(0 10px 22px rgba(163, 25, 85, 0.42))
+          drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16));
         transform-origin: center center;
         transition:
-          transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2),
-          filter 0.3s ease;
-        will-change: transform, filter, opacity;
+          transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+          filter 0.25s ease;
+        will-change: transform, filter;
       }
       .env-seal img {
         width: 100%;
@@ -1311,20 +1312,20 @@
         display: none;
       }
       .env-seal-wrap:hover .env-seal {
-        animation: none;
-        transform: scale(1.08) rotate(-2deg);
-        filter: drop-shadow(0 20px 36px rgba(163, 25, 85, 0.65))
-          drop-shadow(0 0 24px rgba(255, 105, 180, 0.5))
-          drop-shadow(0 8px 14px rgba(0, 0, 0, 0.2));
+        transform: scale(1.05);
+        filter: drop-shadow(0 15px 28px rgba(163, 25, 85, 0.56))
+          drop-shadow(0 5px 10px rgba(0, 0, 0, 0.22));
       }
       .env-seal-wrap:active .env-seal {
-        transform: scale(0.96);
+        transform: scale(0.97);
       }
       .env-seal-hint {
         /* Sits below the envelope, not on it */
         position: absolute;
-        pointer-events: auto;
-        cursor: pointer;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: default;
         top: calc(
           var(--env-h) - var(--flap-h) + var(--seal-size) / 2 + 26px
         );
