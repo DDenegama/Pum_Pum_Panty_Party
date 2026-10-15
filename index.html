@@ -1006,15 +1006,23 @@
         font-style: italic;
         font-size: clamp(2.35rem, 6.5vw, 3.4rem);
         font-weight: 800;
-        color: #ffffff;
-        text-shadow:
-          0 3px 0 #b82363,
-          0 5px 0 #8b1448,
-          0 7px 1px #590a2c,
-          0 10px 24px rgba(139, 20, 72, 0.6),
-          0 0 28px rgba(255, 105, 180, 0.45);
-        letter-spacing: -0.01em;
+        color: #d81b70;
+        background: linear-gradient(
+          180deg,
+          #ff5fae 0%,
+          #e91e82 45%,
+          #a3195b 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        /* White sticker outline (crisp contrast) + soft pink depth */
+        filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+          drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+          drop-shadow(0 6px 10px rgba(163, 25, 91, 0.35));
+        letter-spacing: 0;
         line-height: 1.12;
+        padding: 0 4px;
         margin: 0;
       }
 
@@ -1026,6 +1034,7 @@
         perspective: 1400px;
         user-select: none;
         -webkit-user-select: none;
+        touch-action: none; /* let touch-drag tilt the envelope instead of scrolling */
       }
 
       .env-shadow {
@@ -1057,6 +1066,9 @@
           0 24px 50px rgba(163, 25, 85, 0.28),
           0 6px 16px rgba(0, 0, 0, 0.08);
         background: #fdf2f7;
+        /* Smooth follow for the hover / touch tilt (set from JS) */
+        transition: transform 0.25s ease-out;
+        will-change: transform;
       }
 
       .env-interior {
@@ -1105,8 +1117,11 @@
       }
       .env-card-inner {
         position: relative;
-        width: 100%;
-        height: 100%;
+        /* Fill the card minus the 4px margin so the dashed border isn't clipped */
+        box-sizing: border-box;
+        flex: 1;
+        min-height: 0;
+        width: auto;
         padding: 16px 18px;
         display: flex;
         flex-direction: column;
@@ -1141,6 +1156,13 @@
         font-size: 0.72rem;
         color: #b54576;
         font-weight: 500;
+      }
+      .env-card-time {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #c2185b;
+        letter-spacing: 0.08em;
+        margin-top: 3px;
       }
 
       .env-pocket-left,
@@ -1179,6 +1201,9 @@
         pointer-events: none;
         border-radius: 18px;
         overflow: hidden;
+        /* Fold lines belong to the envelope front only: clip out the open
+           top triangle so they never draw across the card */
+        clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
       }
       .env-creases::before {
         content: "";
@@ -1227,10 +1252,14 @@
 
       /* The Seal */
       .env-seal-wrap {
+        --seal-size: 118px;
+        --env-h: 285px; /* envelope height */
+        --flap-h: 154px; /* flap height = seal centre */
         position: absolute;
-        top: 138px;
+        /* Seal centre sits exactly on the flap's bottom tip (flap height) */
+        top: 154px;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, calc(var(--seal-size) / -2));
         z-index: 10;
         cursor: pointer;
         display: flex;
@@ -1245,8 +1274,8 @@
       }
       .env-seal {
         position: relative;
-        width: 118px;
-        height: 118px;
+        width: var(--seal-size);
+        height: var(--seal-size);
         background: transparent;
         border-radius: 0;
         box-shadow: none;
@@ -1269,23 +1298,6 @@
       .env-seal::after {
         display: none;
       }
-      @keyframes sealBreathe {
-        0%,
-        100% {
-          transform: scale(1);
-          filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.42))
-            drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
-        }
-        50% {
-          transform: scale(1.045);
-          filter: drop-shadow(0 16px 30px rgba(163, 25, 85, 0.58))
-            drop-shadow(0 0 16px rgba(255, 105, 180, 0.4))
-            drop-shadow(0 5px 10px rgba(0, 0, 0, 0.18));
-        }
-      }
-      .env-seal-wrap:not(.is-opening) .env-seal {
-        animation: sealBreathe 2.8s ease-in-out infinite;
-      }
       .env-seal-wrap:hover .env-seal {
         animation: none;
         transform: scale(1.08) rotate(-2deg);
@@ -1297,7 +1309,14 @@
         transform: scale(0.96);
       }
       .env-seal-hint {
-        margin-top: 16px;
+        /* Sits below the envelope, not on it */
+        position: absolute;
+        top: calc(
+          var(--env-h) - var(--flap-h) + var(--seal-size) / 2 + 26px
+        );
+        left: 50%;
+        translate: -50% 0;
+        margin: 0;
         padding: 7px 18px;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.94);
@@ -1358,7 +1377,7 @@
 
       .peel-burst {
         position: absolute;
-        top: 138px;
+        top: 154px;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 140px;
@@ -1410,14 +1429,26 @@
         transform: translateY(8px);
         pointer-events: none;
       }
+      .is-opening .env-header {
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+      }
       .is-opening .env-flap-top {
-        transition-delay: 0.75s;
-        transform: rotateX(180deg);
+        /* Swing backward (away from the viewer), like a real envelope flap */
+        transform: rotateX(-180deg);
+        /* Keep the flap above the card while it swings open, and only drop
+           it behind the card once it has passed the vertical (~90deg) */
         z-index: 1;
+        transition:
+          transform 0.95s cubic-bezier(0.35, 1.05, 0.45, 1) 0.75s,
+          z-index 0s linear 1.2s;
       }
       .is-opening .env-card {
-        transition-delay: 1.25s;
-        transform: translateY(-110px);
+        /* Wait for the flap to finish swinging open (0.75s + 0.95s) */
+        transition-delay: 1.75s;
+        /* Rise high enough that logo, date and time clear the pocket */
+        transform: translateY(-175px);
         box-shadow: 0 24px 50px rgba(184, 35, 99, 0.32);
       }
       .is-opening.stage-fading {
@@ -1447,17 +1478,19 @@
           width: 130px;
         }
         .env-seal-wrap {
-          top: 110px;
+          --seal-size: 96px;
+          --env-h: 230px;
+          --flap-h: 125px;
+          top: 125px;
         }
-        .env-seal {
-          width: 96px;
-          height: 96px;
+        .peel-burst {
+          top: 125px;
         }
         .env-title {
           font-size: clamp(2rem, 7.8vw, 2.5rem);
         }
         .is-opening .env-card {
-          transform: translateY(-90px);
+          transform: translateY(-150px);
         }
       }
     </style>
@@ -1561,7 +1594,6 @@
       <audio
         id="bgm"
         src="assets/audio/beach-party.mp3"
-        autoplay
         preload="auto"
         loop
         playsinline
@@ -1605,6 +1637,7 @@
                 loading="eager"
               />
               <div class="env-card-date">Sunday · 31 Jan 2027</div>
+              <div class="env-card-time">1:00 PM – 8:00 PM</div>
               <div class="env-card-sub">
                 Private Luxury Villa · Pool & Beach Party
               </div>
@@ -2325,7 +2358,10 @@
         var bgm = $("bgm"),
           mb = $("mb"),
           musPlaying = false,
-          userPaused = false;
+          userPaused = false,
+          // Music stays silent while the sealed envelope is showing; it is
+          // unlocked when the guest taps the seal (see openEnvelope)
+          musicGate = !$("envStage");
         if (bgm && mb) {
           bgm.volume = 0.45;
 
@@ -2358,7 +2394,7 @@
 
           // Attempt immediate autoplay on load
           function tryAutoplay() {
-            if (userPaused) return;
+            if (userPaused || !musicGate) return;
             var p = bgm.play();
             if (p && p.then) {
               p.then(function () {
@@ -2381,6 +2417,7 @@
             "keydown",
           ];
           function handleFirstGesture() {
+            if (!musicGate) return; // envelope still sealed: stay silent
             if (userPaused) {
               removeUnlockers();
               return;
@@ -2481,6 +2518,30 @@
             }
           }
 
+          // Always land at the very top of the invitation page
+          function scrollToTop() {
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+          }
+          if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+          }
+          scrollToTop();
+
+          var envFadeT, envHideT, envReady = false;
+
+          function completeEnvelope() {
+            if (envStage.classList.contains("stage-fading")) return;
+            clearTimeout(envFadeT);
+            envStage.classList.add("stage-fading");
+            envHideT = setTimeout(function () {
+              envStage.classList.add("stage-hidden");
+              document.body.classList.remove("env-active");
+              scrollToTop();
+            }, 850);
+          }
+
           function openEnvelope() {
             if (
               envStage.classList.contains("is-opening") ||
@@ -2490,6 +2551,7 @@
             }
 
             // Start background music immediately via this direct user interaction!
+            musicGate = true;
             if (bgm && !userPaused) {
               bgm
                 .play()
@@ -2501,18 +2563,48 @@
             }
 
             envStage.classList.add("is-opening");
+            resetTilt();
 
-            // After flap flips and card slides up with logo, smoothly fade the envelope stage
+            // Card is fully drawn out at ~2.7s; let the guest read the logo,
+            // date and time before moving on (tap anywhere to continue sooner)
             setTimeout(function () {
-              envStage.classList.add("stage-fading");
-            }, 3800);
+              envReady = true;
+            }, 2900);
+            envFadeT = setTimeout(completeEnvelope, 6500);
+          }
 
-            // Complete transition to main invitation
-            setTimeout(function () {
-              envStage.classList.add("stage-hidden");
-              document.body.classList.remove("env-active");
-              toast("Welcome to the Pum-Pum Panty Party! 🌴✨");
-            }, 4700);
+          envStage.addEventListener("click", function () {
+            if (envReady) completeEnvelope();
+          });
+
+          // Tilt the envelope toward the pointer (mouse hover or touch drag)
+          var envBox = envStage.querySelector(".env-box"),
+            envWrap = envStage.querySelector(".env-wrapper"),
+            tiltOK = !(
+              window.matchMedia &&
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            );
+          function resetTilt() {
+            if (envBox) envBox.style.transform = "";
+          }
+          if (envBox && envWrap && tiltOK) {
+            var tiltEnvelope = function (e) {
+              if (envStage.classList.contains("is-opening")) return;
+              var r = envWrap.getBoundingClientRect();
+              var px = (e.clientX - r.left) / r.width - 0.5,
+                py = (e.clientY - r.top) / r.height - 0.5;
+              px = Math.max(-0.5, Math.min(0.5, px));
+              py = Math.max(-0.5, Math.min(0.5, py));
+              envBox.style.transform =
+                "rotateX(" + -py * 18 + "deg) rotateY(" + px * 22 + "deg)";
+            };
+            envWrap.addEventListener("pointermove", tiltEnvelope);
+            envWrap.addEventListener("pointerdown", tiltEnvelope);
+            envWrap.addEventListener("pointerleave", resetTilt);
+            envWrap.addEventListener("pointercancel", resetTilt);
+            envWrap.addEventListener("pointerup", function (e) {
+              if (e.pointerType === "touch") resetTilt();
+            });
           }
 
           envSeal.addEventListener("click", function (e) {
