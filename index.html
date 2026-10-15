@@ -12,7 +12,11 @@
       content="You're invited to the Pum-Pum Panty Party: good vibes, bikinis, friends and fun."
     />
     <title>Pum-Pum Panty Party · You're Invited</title>
-    <link rel="icon" href="assets/icons/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link
+      rel="icon"
+      href="assets/icons/favicon.ico"
+      sizes="16x16 32x32 48x48"
+    />
     <link
       rel="icon"
       type="image/png"
@@ -25,12 +29,26 @@
       sizes="64x64"
       href="assets/icons/favicon.png"
     />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link
-      rel="apple-touch-icon"
-      href="assets/icons/apple-touch-icon.png"
+      rel="preload"
+      as="image"
+      href="assets/images/bg.webp"
+      type="image/webp"
+      fetchpriority="high"
     />
-    <link rel="preload" as="image" href="assets/images/bg.webp" type="image/webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="assets/images/logo.webp" type="image/webp" />
+    <link
+      rel="preload"
+      as="image"
+      href="assets/images/logo.webp"
+      type="image/webp"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="assets/images/wax-seal.webp"
+      type="image/webp"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -499,7 +517,11 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          background 0.2s,
+          opacity 0.2s;
         user-select: none;
         -webkit-user-select: none;
       }
@@ -530,12 +552,25 @@
         transform-origin: bottom;
         animation: eq 0.9s ease-in-out infinite alternate;
       }
-      .m-waves i:nth-child(1) { height: 50%; animation-delay: 0s; }
-      .m-waves i:nth-child(2) { height: 100%; animation-delay: 0.25s; }
-      .m-waves i:nth-child(3) { height: 70%; animation-delay: 0.5s; }
+      .m-waves i:nth-child(1) {
+        height: 50%;
+        animation-delay: 0s;
+      }
+      .m-waves i:nth-child(2) {
+        height: 100%;
+        animation-delay: 0.25s;
+      }
+      .m-waves i:nth-child(3) {
+        height: 70%;
+        animation-delay: 0.5s;
+      }
       @keyframes eq {
-        0% { transform: scaleY(0.25); }
-        100% { transform: scaleY(1); }
+        0% {
+          transform: scaleY(0.25);
+        }
+        100% {
+          transform: scaleY(1);
+        }
       }
       .m-btn.paused .m-waves {
         display: none;
@@ -630,7 +665,7 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        * {
+        *:not(#envStage):not(#envStage *) {
           animation: none !important;
           transition: none !important;
           scroll-behavior: auto !important;
@@ -865,9 +900,569 @@
         background-repeat: repeat;
         background-size: 400px 220px;
       }
+      /* ========================================================
+         LUXURY SEALED ENVELOPE OPENING STAGE
+         ======================================================== */
+      .env-stage {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow: hidden;
+        perspective: 1400px;
+        transition:
+          opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .env-stage.stage-hidden {
+        display: none !important;
+      }
+
+      .env-backdrop {
+        position: absolute;
+        inset: -40px;
+        background:
+          radial-gradient(
+            circle at 50% 35%,
+            rgba(255, 238, 246, 0.95) 0%,
+            rgba(255, 214, 233, 0.95) 55%,
+            rgba(248, 185, 216, 0.97) 100%
+          ),
+          url("assets/images/bg.webp") center center / cover no-repeat;
+        backdrop-filter: blur(28px) saturate(140%);
+        -webkit-backdrop-filter: blur(28px) saturate(140%);
+        z-index: 1;
+      }
+
+      .env-sparkles {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background-image:
+          radial-gradient(
+            circle at 18% 22%,
+            rgba(255, 255, 255, 0.85) 1.5px,
+            transparent 2.5px
+          ),
+          radial-gradient(
+            circle at 82% 16%,
+            rgba(232, 72, 138, 0.5) 2px,
+            transparent 3px
+          ),
+          radial-gradient(
+            circle at 76% 74%,
+            rgba(255, 255, 255, 0.8) 1.5px,
+            transparent 2.5px
+          ),
+          radial-gradient(
+            circle at 24% 80%,
+            rgba(232, 72, 138, 0.5) 2px,
+            transparent 3px
+          );
+        background-size: 200px 200px;
+        animation: envSparkleMove 22s linear infinite;
+      }
+      @keyframes envSparkleMove {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(-200px);
+        }
+      }
+
+      .env-header {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        margin-bottom: 24px;
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+      .env-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.74rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #8b1448;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 6px 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.98);
+        box-shadow: 0 4px 16px rgba(184, 35, 99, 0.18);
+      }
+      .env-title {
+        font-family: var(--sans);
+        font-style: italic;
+        font-size: clamp(2.35rem, 6.5vw, 3.4rem);
+        font-weight: 800;
+        color: #ffffff;
+        text-shadow:
+          0 3px 0 #b82363,
+          0 5px 0 #8b1448,
+          0 7px 1px #590a2c,
+          0 10px 24px rgba(139, 20, 72, 0.6),
+          0 0 28px rgba(255, 105, 180, 0.45);
+        letter-spacing: -0.01em;
+        line-height: 1.12;
+        margin: 0;
+      }
+
+      .env-wrapper {
+        position: relative;
+        z-index: 10;
+        width: min(430px, 92vw);
+        height: 285px;
+        perspective: 1400px;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .env-shadow {
+        position: absolute;
+        bottom: -18px;
+        left: 8%;
+        right: 8%;
+        height: 40px;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(140, 20, 70, 0.38) 0%,
+          rgba(140, 20, 70, 0.08) 50%,
+          transparent 75%
+        );
+        filter: blur(10px);
+        transition:
+          transform 0.8s ease,
+          opacity 0.8s ease;
+      }
+
+      .env-box {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 18px;
+        transform-style: preserve-3d;
+        box-shadow:
+          0 24px 50px rgba(163, 25, 85, 0.28),
+          0 6px 16px rgba(0, 0, 0, 0.08);
+        background: #fdf2f7;
+      }
+
+      .env-interior {
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        background: linear-gradient(
+          145deg,
+          #f7bed6 0%,
+          #ffcde2 50%,
+          #f9c2d9 100%
+        );
+        box-shadow: inset 0 4px 16px rgba(184, 35, 99, 0.25);
+        overflow: hidden;
+        z-index: 1;
+      }
+      .env-interior::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.18;
+        background-image: radial-gradient(#e8488a 12%, transparent 13%);
+        background-size: 18px 18px;
+      }
+
+      .env-card {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 8px;
+        height: 260px;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow:
+          0 6px 20px rgba(0, 0, 0, 0.09),
+          0 1px 3px rgba(0, 0, 0, 0.05);
+        z-index: 2;
+        overflow: hidden;
+        transform: translateY(0);
+        transition:
+          transform 0.95s cubic-bezier(0.25, 0.85, 0.35, 1),
+          box-shadow 0.95s ease;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+      .env-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: radial-gradient(
+          circle at 50% 30%,
+          #fff7fb 0%,
+          #fff0f6 100%
+        );
+        border: 2px dashed #f8bfd6;
+        border-radius: 12px;
+        margin: 4px;
+      }
+      .env-card-logo {
+        width: 155px;
+        max-width: 82%;
+        height: auto;
+        margin-bottom: 8px;
+        filter: drop-shadow(0 4px 12px rgba(232, 72, 138, 0.32));
+      }
+      .env-card-date {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #9c1b52;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+      .env-card-sub {
+        font-size: 0.72rem;
+        color: #b54576;
+        font-weight: 500;
+      }
+
+      .env-pocket-left,
+      .env-pocket-right,
+      .env-pocket-bottom {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .env-pocket-bottom {
+        clip-path: polygon(0 100%, 100% 100%, 50% 48%);
+        background: linear-gradient(0deg, #ffdfec 0%, #fff2f7 100%);
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .env-pocket-left {
+        clip-path: polygon(0 0, 52% 51%, 0 100%);
+        background: linear-gradient(90deg, #ffd6e7 0%, #fff0f6 100%);
+        border-top-left-radius: 18px;
+        border-bottom-left-radius: 18px;
+      }
+      .env-pocket-right {
+        clip-path: polygon(100% 0, 48% 51%, 100% 100%);
+        background: linear-gradient(-90deg, #ffd6e7 0%, #fff0f6 100%);
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+      }
+
+      .env-creases {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        pointer-events: none;
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .env-creases::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            45deg,
+            transparent 49.5%,
+            rgba(184, 35, 99, 0.08) 50%,
+            transparent 50.5%
+          ),
+          linear-gradient(
+            -45deg,
+            transparent 49.5%,
+            rgba(184, 35, 99, 0.08) 50%,
+            transparent 50.5%
+          );
+      }
+
+      .env-flap-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 154px;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        background: linear-gradient(180deg, #fff5f9 0%, #ffddec 100%);
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        transform-origin: top center;
+        transform-style: preserve-3d;
+        transition: transform 0.95s cubic-bezier(0.35, 1.05, 0.45, 1);
+        z-index: 5;
+        filter: drop-shadow(0 6px 12px rgba(163, 25, 85, 0.16));
+      }
+      .env-flap-top::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        background: linear-gradient(0deg, #f7bed6 0%, #fccee1 100%);
+        transform: rotateX(180deg);
+        backface-visibility: hidden;
+      }
+
+      /* The Seal */
+      .env-seal-wrap {
+        position: absolute;
+        top: 138px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .env-seal-wrap:focus-visible .env-seal {
+        outline: 3px solid var(--hot-dark);
+        outline-offset: 4px;
+      }
+      .env-seal {
+        position: relative;
+        width: 118px;
+        height: 118px;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.45))
+          drop-shadow(0 4px 8px rgba(0, 0, 0, 0.16));
+        transform-origin: 70% 20%;
+        transition:
+          transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+          filter 0.3s ease;
+        will-change: transform, filter, opacity;
+      }
+      .env-seal img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 0;
+        display: block;
+        pointer-events: none;
+      }
+      .env-seal::after {
+        display: none;
+      }
+      @keyframes sealBreathe {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.42))
+            drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+        }
+        50% {
+          transform: scale(1.045);
+          filter: drop-shadow(0 16px 30px rgba(163, 25, 85, 0.58))
+            drop-shadow(0 0 16px rgba(255, 105, 180, 0.4))
+            drop-shadow(0 5px 10px rgba(0, 0, 0, 0.18));
+        }
+      }
+      .env-seal-wrap:not(.is-opening) .env-seal {
+        animation: sealBreathe 2.8s ease-in-out infinite;
+      }
+      .env-seal-wrap:hover .env-seal {
+        animation: none;
+        transform: scale(1.08) rotate(-2deg);
+        filter: drop-shadow(0 20px 36px rgba(163, 25, 85, 0.65))
+          drop-shadow(0 0 24px rgba(255, 105, 180, 0.5))
+          drop-shadow(0 8px 14px rgba(0, 0, 0, 0.2));
+      }
+      .env-seal-wrap:active .env-seal {
+        transform: scale(0.96);
+      }
+      .env-seal-hint {
+        margin-top: 16px;
+        padding: 7px 18px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 22px rgba(184, 35, 99, 0.2);
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--hot-dark);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+        white-space: nowrap;
+      }
+      .env-seal-hint svg {
+        width: 14px;
+        height: 14px;
+        fill: var(--hot);
+      }
+
+
+
+      /* Slow Peel Wax Seal Keyframes */
+      @keyframes slowPeelSticker {
+        0% {
+          transform: scale(1) rotate(0deg);
+          filter: drop-shadow(0 12px 24px rgba(163, 25, 85, 0.45));
+        }
+        20% {
+          transform: scale(1.05) rotate(-6deg) skew(-4deg, 3deg)
+            translate(-6px, -10px) rotateX(20deg);
+          filter: drop-shadow(-8px 18px 28px rgba(163, 25, 85, 0.55));
+        }
+        45% {
+          transform: scale(1.1) rotate(-18deg) skew(-8deg, 6deg)
+            translate(-20px, -26px) rotateX(40deg);
+          filter: drop-shadow(-16px 26px 36px rgba(163, 25, 85, 0.4));
+        }
+        70% {
+          transform: scale(1.15) rotate(-32deg) translate(-34px, -48px)
+            rotateX(55deg);
+          opacity: 0.9;
+          filter: drop-shadow(-20px 32px 42px rgba(163, 25, 85, 0.25));
+        }
+        100% {
+          transform: scale(1.22) rotate(-48deg) translate(-50px, -88px)
+            rotateX(75deg);
+          opacity: 0;
+          filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+        }
+      }
+
+      .peel-burst {
+        position: absolute;
+        top: 138px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140px;
+        height: 140px;
+        pointer-events: none;
+        z-index: 15;
+      }
+      .peel-particle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--hot);
+        opacity: 0;
+      }
+      .is-opening .peel-particle {
+        animation: popParticle 0.8s ease-out forwards;
+      }
+      @keyframes popParticle {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+            scale(1);
+          opacity: 0;
+        }
+      }
+
+      /* Orchestrated Timeline */
+      body.env-active .fb,
+      body.env-active .music-ctl {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .fb, .music-ctl {
+        transition: opacity 0.5s ease;
+      }
+      .is-opening .env-seal {
+        animation: slowPeelSticker 1.25s cubic-bezier(0.28, 0.84, 0.42, 1)
+          forwards !important;
+        pointer-events: none;
+      }
+      .is-opening .env-seal-hint {
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+      }
+      .is-opening .env-flap-top {
+        transition-delay: 0.75s;
+        transform: rotateX(180deg);
+        z-index: 1;
+      }
+      .is-opening .env-card {
+        transition-delay: 1.25s;
+        transform: translateY(-110px);
+        box-shadow: 0 24px 50px rgba(184, 35, 99, 0.32);
+      }
+      .is-opening.stage-fading {
+        opacity: 0;
+        transform: scale(1.08);
+        transition:
+          opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+
+
+
+      /* Mobile adjustments */
+      @media (max-width: 440px) {
+        .env-wrapper {
+          width: 330px;
+          height: 230px;
+        }
+        .env-flap-top {
+          height: 125px;
+        }
+        .env-card {
+          height: 205px;
+        }
+        .env-card-logo {
+          width: 130px;
+        }
+        .env-seal-wrap {
+          top: 110px;
+        }
+        .env-seal {
+          width: 96px;
+          height: 96px;
+        }
+        .env-title {
+          font-size: clamp(2rem, 7.8vw, 2.5rem);
+        }
+        .is-opening .env-card {
+          transform: translateY(-90px);
+        }
+      }
     </style>
   </head>
-  <body>
+  <body class="env-active">
     <div class="wm" aria-hidden="true"></div>
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
       <defs>
@@ -957,13 +1552,102 @@
         aria-label="Pause background music"
         title="Beach Party - Background Music"
       >
-        <span class="m-waves" aria-hidden="true">
-          <i></i><i></i><i></i>
-        </span>
-        <svg class="ic m-icon-muted" aria-hidden="true"><use href="#i-mut" /></svg>
+        <span class="m-waves" aria-hidden="true"> <i></i><i></i><i></i> </span>
+        <svg class="ic m-icon-muted" aria-hidden="true">
+          <use href="#i-mut" />
+        </svg>
         <span class="m-lbl">Beach Party ♫</span>
       </button>
-      <audio id="bgm" src="assets/audio/beach-party.mp3" autoplay preload="auto" loop playsinline></audio>
+      <audio
+        id="bgm"
+        src="assets/audio/beach-party.mp3"
+        autoplay
+        preload="auto"
+        loop
+        playsinline
+      ></audio>
+    </div>
+
+    <!-- Luxury Sealed Envelope Opening Stage -->
+    <div
+      class="env-stage"
+      id="envStage"
+      aria-modal="true"
+      role="dialog"
+      aria-label="Sealed Party Invitation"
+    >
+      <div class="env-backdrop"></div>
+      <div class="env-sparkles"></div>
+
+
+
+      <div class="env-header">
+        <div class="env-eyebrow">
+          <span>✨ Exclusive Invitation ✨</span>
+        </div>
+        <h1 class="env-title">You're Invited</h1>
+      </div>
+
+      <div class="env-wrapper">
+        <div class="env-shadow"></div>
+        <div class="env-box">
+          <div class="env-interior"></div>
+
+          <!-- The Invitation Card Peeking Inside -->
+          <div class="env-card">
+            <div class="env-card-inner">
+              <img
+                src="assets/images/logo.webp"
+                class="env-card-logo"
+                alt="Pum Pum Panty Party"
+                width="160"
+                height="80"
+                loading="eager"
+              />
+              <div class="env-card-date">Sunday · 31 Jan 2027</div>
+              <div class="env-card-sub">
+                Private Luxury Villa · Pool & Beach Party
+              </div>
+            </div>
+          </div>
+
+          <div class="env-pocket-left"></div>
+          <div class="env-pocket-right"></div>
+          <div class="env-pocket-bottom"></div>
+          <div class="env-creases"></div>
+          <div class="env-flap-top"></div>
+
+          <!-- The Peeling Wax Seal -->
+          <div
+            class="env-seal-wrap"
+            id="envSeal"
+            role="button"
+            tabindex="0"
+            aria-label="Tap wax seal to open invitation"
+          >
+            <div class="env-seal">
+              <img
+                src="assets/images/wax-seal.webp"
+                alt="Pum-Pum Panty Party Wax Seal"
+                width="118"
+                height="118"
+                loading="eager"
+              />
+            </div>
+            <div class="env-seal-hint">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                />
+              </svg>
+              <span>Tap seal to open</span>
+            </div>
+          </div>
+
+          <!-- Confetti / sparkle burst container -->
+          <div class="peel-burst" id="peelBurst"></div>
+        </div>
+      </div>
     </div>
 
     <main class="wrap">
@@ -1111,7 +1795,10 @@
             </div>
           </div>
           <div class="efb" id="ok" hidden>
-            <p>🎉 RSVP submitted! See you by the pool. Want a backup? Confirm on WhatsApp too.</p>
+            <p>
+              🎉 RSVP submitted! See you by the pool. Want a backup? Confirm on
+              WhatsApp too.
+            </p>
             <div>
               <button type="button" id="okw">Also confirm on WhatsApp</button>
             </div>
@@ -1122,6 +1809,7 @@
       <footer class="ft" id="s7">
         <p class="cl">Same Girls…<br />Bigger Vibes ♡</p>
         <p class="cr">Get Ready for the<br />Ultimate Poolside Party!</p>
+
       </footer>
     </main>
 
@@ -1515,7 +2203,8 @@
             .then(function (res) {
               clearTimeout(to);
               // no-cors responses are opaque (unreadable); only reject on a readable HTTP error
-              if (res && res.type !== "opaque" && !res.ok) throw new Error("http");
+              if (res && res.type !== "opaque" && !res.ok)
+                throw new Error("http");
               lab.textContent = "RSVP Sent ✓";
               $("ok").hidden = false;
               $("okw").onclick = function () {
@@ -1645,7 +2334,7 @@
             mb.classList.toggle("paused", !playing);
             mb.setAttribute(
               "aria-label",
-              playing ? "Pause background music" : "Play background music"
+              playing ? "Pause background music" : "Play background music",
             );
             var l = mb.querySelector(".m-lbl");
             if (l) l.textContent = playing ? "Beach Party ♫" : "Music Off";
@@ -1684,7 +2373,13 @@
           }
 
           // Unlocking on the first genuine user gesture anywhere
-          var gestureEvents = ["click", "pointerdown", "touchstart", "touchend", "keydown"];
+          var gestureEvents = [
+            "click",
+            "pointerdown",
+            "touchstart",
+            "touchend",
+            "keydown",
+          ];
           function handleFirstGesture() {
             if (userPaused) {
               removeUnlockers();
@@ -1710,8 +2405,14 @@
             });
           }
           gestureEvents.forEach(function (ev) {
-            window.addEventListener(ev, handleFirstGesture, { capture: true, passive: true });
-            document.addEventListener(ev, handleFirstGesture, { capture: true, passive: true });
+            window.addEventListener(ev, handleFirstGesture, {
+              capture: true,
+              passive: true,
+            });
+            document.addEventListener(ev, handleFirstGesture, {
+              capture: true,
+              passive: true,
+            });
           });
 
           // Music toggle button
@@ -1725,14 +2426,17 @@
               toast("Music paused 🔇");
             } else {
               userPaused = false;
-              bgm.play().then(function () {
-                musPlaying = true;
-                syncMusicUI(true);
-                toast("Playing: Beach Party 🌴🎶");
-                removeUnlockers();
-              }).catch(function () {
-                toast("Tap to allow audio playback 🎵");
-              });
+              bgm
+                .play()
+                .then(function () {
+                  musPlaying = true;
+                  syncMusicUI(true);
+                  toast("Playing: Beach Party 🌴🎶");
+                  removeUnlockers();
+                })
+                .catch(function () {
+                  toast("Tap to allow audio playback 🎵");
+                });
             }
           };
 
@@ -1745,6 +2449,82 @@
 
           // Start immediately
           tryAutoplay();
+        }
+
+        // ========================================================
+        // SEALED ENVELOPE OPENING LOGIC
+        // ========================================================
+        var envStage = $("envStage"),
+          envSeal = $("envSeal"),
+          peelBurst = $("peelBurst");
+
+        if (envStage && envSeal) {
+          // Pre-generate sparkle particles for seal peel
+          if (peelBurst) {
+            var colors = [
+              "#e8488a",
+              "#ff85b3",
+              "#ffd1e3",
+              "#dfa86a",
+              "#ffffff",
+            ];
+            for (var pi = 0; pi < 16; pi++) {
+              var pDiv = document.createElement("div");
+              pDiv.className = "peel-particle";
+              var angle = (pi / 16) * 2 * Math.PI;
+              var dist = 48 + (pi % 4) * 16;
+              pDiv.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+              pDiv.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+              pDiv.style.background = colors[pi % colors.length];
+              pDiv.style.animationDelay = 0.15 + (pi % 3) * 0.1 + "s";
+              peelBurst.appendChild(pDiv);
+            }
+          }
+
+          function openEnvelope() {
+            if (
+              envStage.classList.contains("is-opening") ||
+              envStage.classList.contains("stage-hidden")
+            ) {
+              return;
+            }
+
+            // Start background music immediately via this direct user interaction!
+            if (bgm && !userPaused) {
+              bgm
+                .play()
+                .then(function () {
+                  musPlaying = true;
+                  syncMusicUI(true);
+                })
+                .catch(function () {});
+            }
+
+            envStage.classList.add("is-opening");
+
+            // After flap flips and card slides up with logo, smoothly fade the envelope stage
+            setTimeout(function () {
+              envStage.classList.add("stage-fading");
+            }, 3800);
+
+            // Complete transition to main invitation
+            setTimeout(function () {
+              envStage.classList.add("stage-hidden");
+              document.body.classList.remove("env-active");
+              toast("Welcome to the Pum-Pum Panty Party! 🌴✨");
+            }, 4700);
+          }
+
+          envSeal.addEventListener("click", function (e) {
+            e.stopPropagation();
+            openEnvelope();
+          });
+          envSeal.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openEnvelope();
+            }
+          });
         }
       })();
     </script>
