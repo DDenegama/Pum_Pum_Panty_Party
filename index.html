@@ -211,6 +211,16 @@
         align-items: center;
         gap: 6px;
       }
+      a.it {
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      a.it:hover {
+        transform: translateY(-2px);
+        opacity: 0.85;
+      }
       .it:first-child {
         border: 0;
       }
@@ -1592,7 +1602,7 @@
 
     <div class="toast" id="tt" role="status" aria-live="polite"></div>
     <div class="fb" id="fb">
-      <span>20 Jan 2027 · Private Villa</span
+      <span>20 Jan 2027 · Downsouth Cabanas</span
       ><button type="button" id="fr">RSVP Now</button>
     </div>
 
@@ -1658,7 +1668,7 @@
               <div class="env-card-date">Wednesday · 20 Jan 2027</div>
               <div class="env-card-time">12:00 PM – 12:00 AM</div>
               <div class="env-card-sub">
-                Private Luxury Villa · Pool & Beach Party
+                Downsouth Cabanas · Pool & Beach Party
               </div>
             </div>
           </div>
@@ -1778,14 +1788,20 @@
           <svg class="ic"><use href="#i-clk" /></svg><span class="k">Time</span
           ><span class="v">12:00 PM – 12:00 AM</span>
         </div>
-        <div class="it">
+        <a
+          class="it"
+          href="https://maps.app.goo.gl/Vn1M4fNcTynKsgrP7"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open Downsouth Cabanas on Google Maps"
+        >
           <svg class="ic"><use href="#i-pin" /></svg><span class="k">Venue</span
-          ><span class="v">Private Villa</span>
-        </div>
+          ><span class="v" style="text-decoration: underline; text-underline-offset: 2px;">Downsouth Cabanas ↗</span>
+        </a>
         <div class="it">
           <svg class="ic"><use href="#i-bik" /></svg
           ><span class="k">Dress Code</span
-          ><span class="v">Pink &amp; White Bikinis</span>
+          ><span class="v">Swimwear</span>
         </div>
       </section>
 
@@ -1873,7 +1889,8 @@
           whatsapp: "94755938444",
           email: "dulsaradenegama@gmail.com",
           insta: "",
-          venue: "Private Villa",
+          venue: "Downsouth Cabanas",
+          maps: "https://maps.app.goo.gl/Vn1M4fNcTynKsgrP7",
           date: "2027-01-20T12:00:00",
           desc: "One exclusive gathering. Three reasons to celebrate: two birthdays and an anniversary, poolside.",
         };
@@ -2137,7 +2154,7 @@
           "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
           encodeURIComponent(C.title) +
           "&dates=20270120T120000/20270121T000000&details=" +
-          encodeURIComponent(C.desc) +
+          encodeURIComponent(C.desc + "\n\nMap: " + C.maps) +
           "&location=" +
           encodeURIComponent(C.venue);
         $("bc2").onclick = function (e) {
@@ -2159,7 +2176,7 @@
             "DTSTAMP:20261014T000000Z",
             "SUMMARY:" + C.title,
             "DESCRIPTION:" + C.desc.replace(/,/g, "\\,"),
-            "LOCATION:" + C.venue,
+            "LOCATION:" + C.venue + " (" + C.maps + ")",
             "DTSTART:20270120T120000",
             "DTEND:20270121T000000",
             "STATUS:CONFIRMED",
@@ -2310,7 +2327,9 @@
               "\n💌 *Note:* " +
               d.m +
               "\n\n📅 Wednesday, 20 January 2027 · " +
-              C.venue,
+              C.venue +
+              "\n📍 Map: " +
+              C.maps,
           );
           toast(
             "Opening WhatsApp… if it doesn't open, your RSVP is copied. Paste it to +94 75 593 8444 🥂",
