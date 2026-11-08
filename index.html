@@ -1592,7 +1592,7 @@
 
     <div class="toast" id="tt" role="status" aria-live="polite"></div>
     <div class="fb" id="fb">
-      <span>31 Jan 2027 · Private Villa</span
+      <span>20 Jan 2027 · Private Villa</span
       ><button type="button" id="fr">RSVP Now</button>
     </div>
 
@@ -1655,8 +1655,8 @@
                 height="80"
                 loading="eager"
               />
-              <div class="env-card-date">Sunday · 31 Jan 2027</div>
-              <div class="env-card-time">1:00 PM – 8:00 PM</div>
+              <div class="env-card-date">Wednesday · 20 Jan 2027</div>
+              <div class="env-card-time">12:00 PM – 12:00 AM</div>
               <div class="env-card-sub">
                 Private Luxury Villa · Pool & Beach Party
               </div>
@@ -1772,11 +1772,11 @@
       <section class="card info rv" id="s4">
         <div class="it">
           <svg class="ic"><use href="#i-cal" /></svg><span class="k">Date</span
-          ><span class="v">31 Jan 2027</span>
+          ><span class="v">20 Jan 2027</span>
         </div>
         <div class="it">
           <svg class="ic"><use href="#i-clk" /></svg><span class="k">Time</span
-          ><span class="v">1:00 PM – 8:00 PM</span>
+          ><span class="v">12:00 PM – 12:00 AM</span>
         </div>
         <div class="it">
           <svg class="ic"><use href="#i-pin" /></svg><span class="k">Venue</span
@@ -1874,7 +1874,7 @@
           email: "dulsaradenegama@gmail.com",
           insta: "",
           venue: "Private Villa",
-          date: "2027-01-31T13:00:00",
+          date: "2027-01-20T12:00:00",
           desc: "One exclusive gathering. Three reasons to celebrate: two birthdays and an anniversary, poolside.",
         };
         var $ = function (i) {
@@ -2136,7 +2136,7 @@
         $("gc").href =
           "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
           encodeURIComponent(C.title) +
-          "&dates=20270131T130000/20270131T200000&details=" +
+          "&dates=20270120T120000/20270121T000000&details=" +
           encodeURIComponent(C.desc) +
           "&location=" +
           encodeURIComponent(C.venue);
@@ -2155,13 +2155,13 @@
             "CALSCALE:GREGORIAN",
             "METHOD:PUBLISH",
             "BEGIN:VEVENT",
-            "UID:pum-pum-panty-party-20270131@invite",
+            "UID:pum-pum-panty-party-20270120@invite",
             "DTSTAMP:20261014T000000Z",
             "SUMMARY:" + C.title,
             "DESCRIPTION:" + C.desc.replace(/,/g, "\\,"),
             "LOCATION:" + C.venue,
-            "DTSTART:20270131T130000",
-            "DTEND:20270131T200000",
+            "DTSTART:20270120T120000",
+            "DTEND:20270121T000000",
             "STATUS:CONFIRMED",
             "END:VEVENT",
             "END:VCALENDAR",
@@ -2309,7 +2309,7 @@
               d.d +
               "\n💌 *Note:* " +
               d.m +
-              "\n\n📅 Sunday, 31 January 2027 · " +
+              "\n\n📅 Wednesday, 20 January 2027 · " +
               C.venue,
           );
           toast(
