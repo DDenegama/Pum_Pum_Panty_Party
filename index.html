@@ -271,11 +271,83 @@
       .extra > * {
         min-width: 0;
       }
+      .g .fld:only-child {
+        grid-column: 1 / -1;
+      }
       .extra {
         margin-top: 12px;
       }
+      .extra .fld {
+        grid-column: 1 / -1;
+      }
       .extra[hidden] {
         display: none;
+      }
+      .att-wrap {
+        margin-top: 14px;
+      }
+      .att-lbl {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--hot);
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .att-grp {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .att-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1.5px solid var(--line);
+        background: rgba(255, 255, 255, 0.65);
+        color: var(--ink);
+        font: 600 0.76rem var(--sans);
+        letter-spacing: 0.02em;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease,
+          color 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+      .att-btn:hover {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: var(--hot);
+        transform: translateY(-1px);
+      }
+      .att-btn:active {
+        transform: translateY(0);
+      }
+      .att-btn.active {
+        background: linear-gradient(135deg, #ff6fa6, #e8488a);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 6px 18px rgba(232, 72, 138, 0.35);
+        transform: translateY(-1px);
+        font-weight: 700;
+      }
+      .att-grp.err .att-btn {
+        border-color: #e0245e;
+        box-shadow: 0 0 0 3px rgba(224, 36, 94, 0.25);
+      }
+      @media (max-width: 480px) {
+        .att-grp {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 8px;
+        }
       }
       .fld {
         display: flex;
@@ -1814,40 +1886,42 @@
               ><svg class="ic"><use href="#i-usr" /></svg
               ><input id="nm" placeholder="Your Name *" autocomplete="name"
             /></label>
-            <label class="fld"
-              ><svg class="ic"><use href="#i-mail" /></svg
-              ><input
-                id="em"
-                type="email"
-                placeholder="Email Address *"
-                autocomplete="email"
-            /></label>
-            <label class="fld"
-              ><svg class="ic"><use href="#i-tel" /></svg
-              ><input
-                id="ph"
-                type="tel"
-                placeholder="Phone Number"
-                autocomplete="tel"
-            /></label>
-            <label class="fld"
-              ><svg class="ic"><use href="#i-cal" /></svg
-              ><select id="at">
-                <option value="" disabled selected>Will You Attend? *</option>
-                <option>Yes, delighted to attend 🥂</option>
-                <option>Sending love from afar 💌</option></select
-              ><svg class="ic"><use href="#i-chv" /></svg
-            ></label>
+          </div>
+          <div class="att-wrap">
+            <div class="att-lbl">Will You Attend? *</div>
+            <div
+              class="att-grp"
+              id="attGrp"
+              role="radiogroup"
+              aria-label="Will You Attend?"
+            >
+              <button
+                type="button"
+                class="att-btn"
+                data-val="Yes, delighted to attend 🥂"
+                role="radio"
+                aria-checked="false"
+              >
+                <span>Yes, delighted to attend 🥂</span>
+              </button>
+              <button
+                type="button"
+                class="att-btn"
+                data-val="Sending love from afar 💌"
+                role="radio"
+                aria-checked="false"
+              >
+                <span>Sending love from afar 💌</span>
+              </button>
+            </div>
+            <input type="hidden" id="at" value="" />
           </div>
           <button type="button" class="more" id="mt">
-            + Add drinks, dietary &amp; song notes
+            + Add drinks &amp; dietary notes
           </button>
           <div class="extra" id="ex" hidden>
             <label class="fld"
               ><input id="dt" placeholder="Drink &amp; dietary notes"
-            /></label>
-            <label class="fld"
-              ><input id="ms" placeholder="Song request or note"
             /></label>
           </div>
           <button type="submit" class="send">
@@ -1886,8 +1960,8 @@
         "use strict";
         var C = {
           title: "PUM-PUM PANTY PARTY",
-          whatsapp: "94755938444",
-          email: "dulsaradenegama@gmail.com",
+          whatsapp: "94723366787",
+          email: "cgdreamplanners@gmail.com",
           insta: "",
           venue: "Downsouth Cabanas",
           maps: "https://maps.app.goo.gl/Vn1M4fNcTynKsgrP7",
@@ -2197,17 +2271,30 @@
 
         // RSVP
         var f = $("f"),
-          sel = $("at");
+          atInp = $("at"),
+          attGrp = $("attGrp"),
+          attBtns = document.querySelectorAll(".att-btn");
+
+        attBtns.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            attBtns.forEach(function (b) {
+              b.classList.remove("active");
+              b.setAttribute("aria-checked", "false");
+            });
+            this.classList.add("active");
+            this.setAttribute("aria-checked", "true");
+            atInp.value = this.getAttribute("data-val");
+            attGrp.classList.remove("err");
+          });
+        });
+
         $("mt").onclick = function () {
           var x = $("ex");
           x.hidden = !x.hidden;
           this.textContent = x.hidden
-            ? "+ Add drinks, dietary & song notes"
-            : "− Hide extra notes";
+            ? "+ Add drinks & dietary notes"
+            : "− Hide dietary notes";
         };
-        sel.addEventListener("change", function () {
-          sel.classList.add("has");
-        });
         function clr(e) {
           var l = e.target.closest && e.target.closest(".fld");
           if (l) l.classList.remove("err");
@@ -2216,27 +2303,27 @@
         f.addEventListener("change", clr);
         function data() {
           var ok = true,
-            e = $("em");
-          [$("nm"), e, sel].forEach(function (x) {
-            var v = x.value.trim(),
-              bad = !v || (x === e && !/^\S+@\S+\.\S+$/.test(v));
-            x.parentNode.classList.toggle("err", bad);
-            if (bad && ok) {
-              ok = false;
-              x.focus();
-            }
-          });
+            nm = $("nm"),
+            badNm = !nm.value.trim();
+          nm.parentNode.classList.toggle("err", badNm);
+          if (badNm) {
+            ok = false;
+            nm.focus();
+          }
+          var badAt = !atInp.value;
+          attGrp.classList.toggle("err", badAt);
+          if (badAt && ok) {
+            ok = false;
+            attGrp.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
           if (!ok) {
             toast("Please complete the starred fields ✨");
             return null;
           }
           return {
-            n: $("nm").value.trim(),
-            e: e.value.trim(),
-            p: $("ph").value.trim(),
-            a: sel.value,
+            n: nm.value.trim(),
+            a: atInp.value,
             d: $("dt").value.trim() || "None specified",
-            m: $("ms").value.trim() || "Looking forward to celebrating!",
           };
         }
         function wa(t) {
@@ -2250,26 +2337,19 @@
         var G = {
           id: "1FAIpQLSfK875-L4lJn3SWnpLURE6MiIYVxy_-W0xkvp6Wuml8Ji4xzQ",
           n: "entry.959153428",
-          e: "entry.1916795999",
-          p: "entry.387374501",
           a: "entry.178795441",
           dr: "entry.326678478",
-          so: "entry.223906901",
         };
         function sendForm(d) {
           var btn = f.querySelector(".send"),
             lab = btn.lastChild,
             b = new URLSearchParams(),
-            dn = $("dt").value.trim(),
-            mn = $("ms").value.trim();
+            dn = $("dt").value.trim();
           btn.disabled = true;
           lab.textContent = "Sending…";
           b.append(G.n, d.n);
-          b.append(G.e, d.e);
-          if (d.p) b.append(G.p, d.p);
           b.append(G.a, d.a);
           if (G.dr && dn) b.append(G.dr, dn);
-          if (G.so && mn) b.append(G.so, mn);
           var ac = window.AbortController ? new AbortController() : null,
             to = setTimeout(function () {
               if (ac) ac.abort();
@@ -2318,14 +2398,8 @@
               d.n +
               "\n🥂 *Status:* " +
               d.a +
-              "\n📧 *Email:* " +
-              d.e +
-              "\n📱 *Phone:* " +
-              d.p +
               "\n🍸 *Drinks/Diet:* " +
               d.d +
-              "\n💌 *Note:* " +
-              d.m +
               "\n\n📅 Wednesday, 20 January 2027 · " +
               C.venue +
               "\n📍 Map: " +
@@ -2345,14 +2419,8 @@
             d.n +
             "\nStatus: " +
             d.a +
-            "\nEmail: " +
-            d.e +
-            "\nPhone: " +
-            d.p +
             "\nDrinks & Dietary Notes: " +
             d.d +
-            "\nNote / Song Request: " +
-            d.m +
             "\n\nSent from the private invitation.";
           var sub = "RSVP: " + C.title + " - " + d.n,
             q =
